@@ -84,7 +84,7 @@ public class LoyaltyProgram {
     }
 
     private boolean isValidEmail(String email) {
-        // Regular expression for validating email
+
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
@@ -92,7 +92,7 @@ public class LoyaltyProgram {
     }
 
     private boolean isValidPhone(String phone) {
-        // Regular expression for validating phone number
+
         String phoneRegex = "^\\d{10}$";
         Pattern pattern = Pattern.compile(phoneRegex);
         Matcher matcher = pattern.matcher(phone);
@@ -292,7 +292,7 @@ public class LoyaltyProgram {
     }
 
     private void updateCustomerPoints(int customerId, int points) throws SQLException {
-        // Update customer points in the database
+
 
        try{
            String query = "UPDATE customers SET loyalty_points = ? WHERE customer_id = ?";
