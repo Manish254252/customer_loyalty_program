@@ -13,9 +13,9 @@ import java.util.regex.Pattern;
  */
 public class LoyaltyProgram {
 
-    private Map<Integer, Customer> customers;
-    private List<Transaction> transactions;
-    private List<Reward> rewards;
+    private final Map<Integer, Customer> customers;
+    private final List<Transaction> transactions;
+    private final List<Reward> rewards;
 
     /**
      * Registers a new customer. The customer is assigned a unique ID and that
@@ -70,12 +70,16 @@ public class LoyaltyProgram {
            customers.put(c1.getCustomerId(), c1);
        }
 
-        String query = "INSERT INTO customers (first_name, email, phone,join_date) VALUES (?, ?, ?,CURRENT_DATE())";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, name);
-        preparedStatement.setString(2, email);
-        preparedStatement.setString(3, phone);
-        preparedStatement.executeUpdate();
+        try {
+            String query = "INSERT INTO customers (first_name, email, phone,join_date) VALUES (?, ?, ?,CURRENT_DATE())";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, phone);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());;
+        }
 
     }
 
@@ -116,12 +120,17 @@ public class LoyaltyProgram {
         Transaction t1 = new Transaction(customerId, amount);
         transactions.add(t1);
 
-        String query = "INSERT INTO transactions (customer_id, amount,points_earned) VALUES (?, ?,?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, customerId);
-        preparedStatement.setDouble(2, amount);
-        preparedStatement.setDouble(3, t1.getPointsEarned());
-        preparedStatement.executeUpdate();
+       try {
+           String query = "INSERT INTO transactions (customer_id, amount,points_earned) VALUES (?, ?,?)";
+           PreparedStatement preparedStatement = connection.prepareStatement(query);
+           preparedStatement.setInt(1, customerId);
+           preparedStatement.setDouble(2, amount);
+           preparedStatement.setDouble(3, t1.getPointsEarned());
+           preparedStatement.executeUpdate();
+
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
 
         updateCustomerPoints(customerId, amount);
 
@@ -136,21 +145,33 @@ public class LoyaltyProgram {
         int pointsEarned = (int) (amount / 10);
 
         // Update customer points in the database
-        String updateQuery = "UPDATE customers SET loyalty_points = ? WHERE customer_id = ?";
-        try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-            updateStatement.setInt(1, currentPoints + pointsEarned);
-            updateStatement.setInt(2, customerId);
-            updateStatement.executeUpdate();
+        try
+        {
+            String updateQuery = "UPDATE customers SET loyalty_points = ? WHERE customer_id = ?";
+            try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                updateStatement.setInt(1, currentPoints + pointsEarned);
+                updateStatement.setInt(2, customerId);
+                updateStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
 
     private boolean isCustomerRegistered(int customerId) throws SQLException {
         // Check if the customer is registered (you need to implement this method)
-        String query = "SELECT * FROM customers WHERE customer_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, customerId);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        ResultSet resultSet;
+        try
+        {
+            String query = "SELECT * FROM customers WHERE customer_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, customerId);
+           resultSet = preparedStatement.executeQuery();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
 
         if (resultSet.next()) {
@@ -175,12 +196,17 @@ public class LoyaltyProgram {
 
         rewards.add(r1);
 
-        String query = "INSERT INTO rewards (reward_id, description, points_required) VALUES (?, ?, ?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, rewardId);
-        preparedStatement.setString(2, description);
-        preparedStatement.setInt(3, pointsRequired);
-        preparedStatement.executeUpdate();
+       try
+       {
+           String query = "INSERT INTO rewards (reward_id, description, points_required) VALUES (?, ?, ?)";
+           PreparedStatement preparedStatement = connection.prepareStatement(query);
+           preparedStatement.setInt(1, rewardId);
+           preparedStatement.setString(2, description);
+           preparedStatement.setInt(3, pointsRequired);
+           preparedStatement.executeUpdate();
+       } catch (SQLException e) {
+           throw new RuntimeException(e);
+       }
 
     }
 
@@ -230,12 +256,17 @@ public class LoyaltyProgram {
         int points = 0;
 
         String query = "SELECT loyalty_points FROM customers WHERE customer_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, customerId);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            points = resultSet.getInt("loyalty_points");
-        }
+       try
+       {
+           PreparedStatement preparedStatement = connection.prepareStatement(query);
+           preparedStatement.setInt(1, customerId);
+           ResultSet resultSet = preparedStatement.executeQuery();
+           if (resultSet.next()) {
+               points = resultSet.getInt("loyalty_points");
+           }
+       } catch (SQLException e) {
+           throw new RuntimeException(e);
+       }
 
         return points;
     }
@@ -245,11 +276,16 @@ public class LoyaltyProgram {
         int pointsRequired = 0;
 
         String query = "SELECT points_required FROM rewards WHERE reward_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, rewardId);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            pointsRequired = resultSet.getInt("points_required");
+        try
+        {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, rewardId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                pointsRequired = resultSet.getInt("points_required");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         return pointsRequired;
@@ -258,11 +294,16 @@ public class LoyaltyProgram {
     private void updateCustomerPoints(int customerId, int points) throws SQLException {
         // Update customer points in the database
 
-        String query = "UPDATE customers SET loyalty_points = ? WHERE customer_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, points);
-        preparedStatement.setInt(2, customerId);
-        preparedStatement.executeUpdate();
+       try{
+           String query = "UPDATE customers SET loyalty_points = ? WHERE customer_id = ?";
+           PreparedStatement preparedStatement = connection.prepareStatement(query);
+           preparedStatement.setInt(1, points);
+           preparedStatement.setInt(2, customerId);
+           preparedStatement.executeUpdate();
+       }catch(SQLException e)
+       {
+           throw new RuntimeException(e);
+       }
 
     }
 
@@ -285,20 +326,25 @@ public class LoyaltyProgram {
         }
 
         String query = "SELECT * FROM customers WHERE customer_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, customerId);
-        ResultSet resultSet = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            System.out.println("Customer Information:");
-            System.out.println("ID: " + resultSet.getInt("customer_id"));
-            System.out.println("Name: " + resultSet.getString("first_name"));
-            System.out.println("Email: " + resultSet.getString("email"));
-            System.out.println("Phone: " + resultSet.getString("phone"));
-            System.out.println("Points Balance: " + resultSet.getInt("loyalty_points"));
-            // Add logic to display transaction history if needed
-        } else {
-            System.out.println("Customer not found.");
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, customerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                System.out.println("Customer Information:");
+                System.out.println("ID: " + resultSet.getInt("customer_id"));
+                System.out.println("Name: " + resultSet.getString("first_name"));
+                System.out.println("Email: " + resultSet.getString("email"));
+                System.out.println("Phone: " + resultSet.getString("phone"));
+                System.out.println("Points Balance: " + resultSet.getInt("loyalty_points"));
+                // Add logic to display transaction history if needed
+            } else {
+                System.out.println("Customer not found.");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
