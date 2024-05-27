@@ -106,7 +106,7 @@ public class LoyaltyProgram {
      * @param amount     Amount of the transaction
      */
     public void addTransaction(int customerId, double amount) throws SQLException {
-        // TODO: Implement this method
+
 
         if (!isCustomerRegistered(customerId)) {
             System.out.println("Customer is not registered. Please register the customer first.");
@@ -172,7 +172,7 @@ public class LoyaltyProgram {
     public void addReward(int rewardId, String description, int pointsRequired) throws SQLException {
 
         Reward r1 = new Reward(rewardId, description, pointsRequired);
-        // TODO: Implement this method
+
         rewards.add(r1);
 
         String query = "INSERT INTO rewards (reward_id, description, points_required) VALUES (?, ?, ?)";
@@ -195,7 +195,7 @@ public class LoyaltyProgram {
      * @param rewardId   ID of the reward to redeem
      */
     public void redeemReward(int customerId, int rewardId) throws SQLException {
-        // TODO Implement this method
+
 
         int customerPoints = getCustomerPoints(customerId);
         int rewardPointsRequired = getRewardPointsRequired(rewardId);
