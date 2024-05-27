@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Customer {
   // Static counter to generate unique customer IDs
-  private static int idCounter = 1;
+  static int idCounter = 1;
   private int customerId;
   private String name;
   private String email;
