@@ -58,7 +58,7 @@ public class LoyaltyProgram {
             return;
         }
 
-        // Check if phone number is valid
+
         if (!isValidPhone(phone)) {
             System.out.println("Invalid phone number format. Please enter a valid phone number.");
             return;
@@ -138,13 +138,13 @@ public class LoyaltyProgram {
 
 
     private void updateCustomerPoints(int customerId, double amount) throws SQLException {
-        // Retrieve current points
+
         int currentPoints = getCustomerPoints(customerId);
 
-        // Calculate points earned based on transaction amount (e.g., 1 point for every $10 spent)
+
         int pointsEarned = (int) (amount / 10);
 
-        // Update customer points in the database
+
         try
         {
             String updateQuery = "UPDATE customers SET loyalty_points = ? WHERE customer_id = ?";
@@ -160,7 +160,7 @@ public class LoyaltyProgram {
 
 
     private boolean isCustomerRegistered(int customerId) throws SQLException {
-        // Check if the customer is registered (you need to implement this method)
+
         ResultSet resultSet;
         try
         {
@@ -231,10 +231,10 @@ public class LoyaltyProgram {
             return;
         }
 
-        // Deduct points from the customer's balance
+
         updateCustomerPoints(customerId, customerPoints - rewardPointsRequired);
 
-        // Issue the reward to the customer
+
         issueRewardToCustomer(customerId, rewardId);
         insertRedemptionRecord(customerId, rewardId, rewardPointsRequired);
         System.out.println("Points redeemed Successfully");
@@ -252,7 +252,7 @@ public class LoyaltyProgram {
     }
 
     private int getCustomerPoints(int customerId) throws SQLException {
-        // Retrieve customer points from the database
+
         int points = 0;
 
         String query = "SELECT loyalty_points FROM customers WHERE customer_id = ?";
@@ -272,7 +272,7 @@ public class LoyaltyProgram {
     }
 
     private int getRewardPointsRequired(int rewardId) throws SQLException {
-        // Retrieve reward points required from the database
+
         int pointsRequired = 0;
 
         String query = "SELECT points_required FROM rewards WHERE reward_id = ?";
@@ -308,7 +308,7 @@ public class LoyaltyProgram {
     }
 
     private void issueRewardToCustomer(int customerId, int rewardId) {
-        // Implement logic to issue the reward to the customer (e.g., update customer's reward history)
+
         System.out.println("Reward with ID " + rewardId + " redeemed successfully by customer with ID " + customerId);
     }
 
@@ -339,7 +339,7 @@ public class LoyaltyProgram {
                 System.out.println("Email: " + resultSet.getString("email"));
                 System.out.println("Phone: " + resultSet.getString("phone"));
                 System.out.println("Points Balance: " + resultSet.getInt("loyalty_points"));
-                // Add logic to display transaction history if needed
+
             } else {
                 System.out.println("Customer not found.");
             }
