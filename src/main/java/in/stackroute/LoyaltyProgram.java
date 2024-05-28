@@ -48,6 +48,17 @@ public class LoyaltyProgram {
         rewards = new ArrayList<>();
     }
 
+    public Map<Integer, Customer> getCustomers() {
+        return customers;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public List<Reward> getRewards() {
+        return rewards;
+    }
 
     public void registerCustomer(String name, String email, String phone) throws SQLException {
         if (name == null || name.isEmpty()) {
