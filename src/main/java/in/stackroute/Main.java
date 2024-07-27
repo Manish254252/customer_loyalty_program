@@ -9,7 +9,7 @@ public class Main {
         LoyaltyProgram program = new LoyaltyProgram();
 
         while (true) {
-            System.out.println("\nCustomer Loyalty Program");
+            System.out.println("\nCustomer Loyalty Program"); 
             System.out.println("1. Register Customer");
             System.out.println("2. Add Transaction");
             System.out.println("3. Add Reward");
